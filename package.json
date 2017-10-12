@@ -1,0 +1,38 @@
+{
+  "files": [
+    "phovea_processing_similarity",
+    "__init__.py",
+    "__main__.py",
+    "build",
+    "requirements.txt",
+    "requirements_dev.txt",
+    "docker_packages.txt"
+  ],
+  "scripts": {
+    "check": "flake8",
+    "pretest": "npm run check",
+    "test": "test ! -d tests || python setup.py test",
+    "docs": "sphinx-apidoc -o docs -f ./phovea_processing_similarity && sphinx-build ./docs build/docs",
+    "prebuild": "node -e \"process.exit(process.env.PHOVEA_SKIP_TESTS === undefined?1:0)\" || npm run test",
+    "build": "python build.py",
+    "predist": "npm run build && npm run docs",
+    "dist": "python setup.py bdist_egg && cd build && tar cvzf ../dist/phovea_processing_similarity.tar.gz *"
+  },
+  "name": "phovea_processing_similarity",
+  "description": "Processing queue plugin to compute similarities for categorical data of matrices, tables, and stratifications",
+  "homepage": "https://phovea.caleydo.org",
+  "version": "1.0.0-SNAPSHOT",
+  "author": {
+    "name": "Klaus Eckelt",
+    "email": "Klaus.Eckelt@gmail.com",
+    "url": ""
+  },
+  "license": "BSD-3-Clause",
+  "bugs": {
+    "url": "https://github.com/phovea/phovea_processing_similarity/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/phovea/phovea_processing_similarity.git"
+  }
+}

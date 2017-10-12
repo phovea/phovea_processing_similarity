@@ -1,0 +1,28 @@
+{
+  "generator-phovea": {
+    "type": "slib",
+    "sextensions": [
+      {
+        "type": "namespace",
+        "id": "hello_world",
+        "module": "hello_world",
+        "extras": {
+          "namespace": "/api/hello_world"
+        }
+      }
+    ],
+    "modules": [
+      "phovea_server",
+      "phovea_processing_queue"
+    ],
+    "libraries": [],
+    "unknown": {
+      "requirements": [],
+      "dockerPackages": []
+    },
+    "name": "phovea_processing_similarity",
+    "author": "Klaus Eckelt",
+    "today": "Thu, 12 Oct 2017 14:12:17 GMT",
+    "githubAccount": "phovea"
+  }
+}
