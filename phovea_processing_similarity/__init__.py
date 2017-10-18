@@ -11,9 +11,12 @@ def phovea(registry):
   :param registry:
   """
   # generator-phovea:begin
-  registry.append('namespace', 'hello_world', 'phovea_processing_similarity.hello_world', {
-   'namespace': '/api/hello_world'
-  })
+  registry.append('namespace', 'similarity_api', 'phovea_processing_similarity.api',
+                  {
+                      'namespace': '/api/similarity'
+                  })
+
+  registry.append('processing-task', 'similarity_api', 'phovea_processing_similarity.tasks', {})
   # generator-phovea:end
   pass
 
