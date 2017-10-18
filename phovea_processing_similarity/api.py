@@ -5,7 +5,7 @@ from phovea_server.ns import Namespace
 app = Namespace(__name__)
 
 
-@app.route('/<method>/', methods=['GET'])
+@app.route('/group/<method>/', methods=['GET'])
 def calc_similarity(method):
   from . import tasks  # import from current package
   from flask import request
