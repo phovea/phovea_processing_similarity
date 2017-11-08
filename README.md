@@ -1,7 +1,12 @@
 phovea_processing_similarity [![Phovea][phovea-image]][phovea-url] [![NPM version][npm-image]][npm-url] [![Build Status][travis-image]][travis-url] [![Dependency Status][daviddm-image]][daviddm-url]
 =====================
 
-Processing queue plugin to compute similarities for categorical data of matrices, tables, and stratifications
+[Processing queue](https://github.com/phovea/phovea_processing_queue) plugin to compute similarities for categorical data of matrices, tables, and stratifications.
+
+API will be available at `SERVER:PORT/api/similarity/` e.g.:
+```
+http://localhost:9000/api/similarity/group/jaccard/?range=11
+```
 
 Installation
 ------------
