@@ -1,4 +1,4 @@
-from __future__ import absolute_import
+from __future__ import absolute_import, division
 
 from phovea_processing_queue.task_definition import task, getLogger
 from phovea_server.dataset import list_datasets
@@ -91,18 +91,24 @@ def group_similarity(method, ids):
         for col in dataset.columns:
           if col.type == 'real'or col.type == 'int':
             # real and int is numerical
-            data_stack = np.column_stack((dataset.rowids(),col.asnumpy(), np.zeros((dataset.rowids().shape[0],2))))  # concat ids an data
+            data_stack = np.column_stack((dataset.rowids(),col.asnumpy(), np.zeros((dataset.rowids().shape[0],4))))  # concat ids an data
             # matrix is now sorted by id, not by data
             data_stack = data_stack[data_stack[:,1].argsort()]  # sort by data
             ids_found = 0
             ids_present = np.sum(np.in1d(cmp_patients, dataset.rowids(),assume_unique=True))
             for row in range(data_stack.shape[0]):  # iterate over columns (numbers)
-              data_stack[row][3] = ids_present - ids_found
+              data_stack[row][4] = ids_present - ids_found
+              #data_stack[row][5] = (ids_present - ids_found) / (row-ids_found+ids_present)  # not (row+1) here
+              total_elements_reverse = ((data_stack.shape[0] - row) + ids_found)
+              data_stack[row][5] =  (ids_present - ids_found) / total_elements_reverse
               if data_stack[row][0] in cmp_patients:
                 ids_found += 1
               data_stack[row][2] = ids_found
-
+              data_stack[row][3] = row+1  # +1 to reflect number of elements
+              total_elements = ((row + 1) - ids_found + ids_present)  # +1 to reflect number of elements
+              data_stack[row][3] = (ids_found) / total_elements
             print col.name
+
 
 
 
