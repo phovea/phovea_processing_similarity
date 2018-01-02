@@ -11,8 +11,7 @@ _log = getLogger(__name__)
 def list_groups():
   groups = []
 
-  datasets = list_datasets()
-  for dataset in datasets:
+  for dataset in list_datasets():
     # check data type, e.g. HDFTable, HDFStratification, HDFMatrix
     if dataset.type == 'stratification':
       for group in dataset.groups():
@@ -61,7 +60,7 @@ def add(x, y):
 
 
 @task
-def similarity(method, ids):
+def group_similarity(method, ids):
   _log.debug('Start to calculate %s similarity.', method)
 
   similarity_measure = similarity_by_name(method)
@@ -75,12 +74,26 @@ def similarity(method, ids):
     parsed_range = parse(ids)
     cmp_patients = np.array(parsed_range[0])  # [0] since ranges are multidimensional but you just want the first one
     # now compare that group's list of patients to all others
-    for group in list_groups():
-      sim_score = similarity_measure(cmp_patients, group['ids'])
-      if group['dataset'] not in result["values"] or similarity_measure.is_more_similar(sim_score,
-                                                                                      result['values'][group['dataset']]):
-        result['values'][group['dataset']] = sim_score
-        result['groups'][group['dataset']] = group['label']
+
+    # categorized data:
+    # for group in list_groups():
+    #   sim_score = similarity_measure(cmp_patients, group['ids'])
+    #   if group['dataset'] not in result["values"] or similarity_measure.is_more_similar(sim_score,
+    #                                                                                   result['values'][group['dataset']]):
+    #     result['values'][group['dataset']] = sim_score
+    #     result['groups'][group['dataset']] = group['label']
+
+    # numerical data:
+    # numerical data is binned to find best match
+    for dataset in list_datasets():
+      if dataset.type == 'table':  # maybe also vector?
+        print dataset.id
+        for col in dataset.columns:
+          if col.type == 'real'or col.type == 'int':
+            # numerical and intreal and int is numerical
+            print col.name
+
+
 
   except Exception as e:
     _log.exception('Can not fulfill task. Error: %s.', e)

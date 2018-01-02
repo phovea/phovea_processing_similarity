@@ -10,7 +10,7 @@ def calc_similarity(method):
   from . import tasks  # import from current package
   from flask import request
 
-  res = tasks.similarity.delay(method, request.args['range'])
+  res = tasks.group_similarity.delay(method, request.args['range'])
   return res.id
 
 
