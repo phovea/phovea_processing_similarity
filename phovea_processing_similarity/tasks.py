@@ -91,11 +91,13 @@ def group_similarity(method, ids):
         for col in dataset.columns:
           if col.type == 'real'or col.type == 'int':
             # real and int is numerical
-            data_stack = np.column_stack((dataset.rowids(),col.asnumpy(), np.zeros(dataset.rowids().shape[0])))  # concat ids an data
+            data_stack = np.column_stack((dataset.rowids(),col.asnumpy(), np.zeros((dataset.rowids().shape[0],2))))  # concat ids an data
             # matrix is now sorted by id, not by data
             data_stack = data_stack[data_stack[:,1].argsort()]  # sort by data
-            ids_found = 0;
+            ids_found = 0
+            ids_present = np.sum(np.in1d(cmp_patients, dataset.rowids(),assume_unique=True))
             for row in range(data_stack.shape[0]):  # iterate over columns (numbers)
+              data_stack[row][3] = ids_present - ids_found
               if data_stack[row][0] in cmp_patients:
                 ids_found += 1
               data_stack[row][2] = ids_found
