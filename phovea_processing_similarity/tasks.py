@@ -8,6 +8,24 @@ import numpy as np
 _log = getLogger(__name__)
 
 
+def list_groups():
+  groups = []
+
+  datasets = list_datasets()
+  for dataset in datasets:
+    if dataset.type == 'stratification':
+      for group in dataset.groups():
+        # now we have got two list that should get compared
+        groups.append(dict(
+          dataset=dataset.id,
+          label=group.name,
+          ids=dataset.rowids(group.range)
+        ))
+
+
+  return groups
+
+
 @task
 def add(x, y):
   return x + y
@@ -38,7 +56,8 @@ def similarity(method, ids):
           pat_set2 = dataset.rowids(group.range)
           sim_score = similarity_measure(cmp_patients, pat_set2)
 
-          if dataset.id not in result['values'] or similarity_measure.is_more_similar(sim_score, result['values'][dataset.id]):
+          if dataset.id not in result['values'] or similarity_measure.is_more_similar(sim_score,
+                                                                                      result['values'][dataset.id]):
             result['values'][dataset.id] = sim_score
             result['groups'][dataset.id] = group.name
 
@@ -55,29 +74,33 @@ def similarity(method, ids):
           mat_column = mat_data[:, col]
           # check in which categories the patients are
           for cat in dataset.categories:
-            cat_row_indicies = np.argwhere(mat_column == cat['name'])[:, 0]  # get indicies as 1column matrix and convert to 1d array
+            cat_row_indicies = np.argwhere(mat_column == cat['name'])[:,
+                               0]  # get indicies as 1column matrix and convert to 1d array
             patients_in_cat = dataset.rowids()[cat_row_indicies]  # indicies to patient ids
             sim_score = similarity_measure(cmp_patients, patients_in_cat)
 
             column_id = dataset.id + '-c' + str(col)
-            if column_id not in result['values'] or similarity_measure.is_more_similar(sim_score, result['values'][column_id]):
+            if column_id not in result['values'] or similarity_measure.is_more_similar(sim_score,
+                                                                                       result['values'][column_id]):
               result['values'][column_id] = sim_score
               result['groups'][column_id] = cat if isinstance(cat, str) else cat['label']
               # e.g. result['tcgaGbmSampledMutations-c9408'] = 1
 
-      elif dataset.type == 'table':
+      elif dataset.type == 'table':  # has no 'value'-attribute like matrix
         for col in dataset.columns:
           if col.type == 'categorical':
             col_data = col.asnumpy()  # table doesnt have asnumpy()
             for cat in col.categories:
-              cat_name = cat if isinstance(cat, str) else cat['name']  # TCGA table had just the strings, calumma table has a dict like matrix above
+              cat_name = cat if isinstance(cat, str) else cat[
+                'name']  # TCGA table had just the strings, calumma table has a dict like matrix above
               cat_row_indicies = np.argwhere(col_data == cat_name)[:, 0]
               if cat_row_indicies.size > 0:
                 patients_in_cat = dataset.rowids()[cat_row_indicies]  # indicies to patient ids
                 sim_score = similarity_measure(cmp_patients, patients_in_cat)
 
                 column_id = dataset.id + '_' + col.name  # id in stratomex has trailing '-s' which is not needed here (e.g. tcgaGbmSampledClinical_patient.ethnicity-s)
-                if column_id not in result['values'] or similarity_measure.is_more_similar(sim_score, result['values'][column_id]):
+                if column_id not in result['values'] or similarity_measure.is_more_similar(sim_score,
+                                                                                           result['values'][column_id]):
                   result['values'][column_id] = sim_score
                   result['groups'][column_id] = cat if isinstance(cat, str) else cat['label']
 
