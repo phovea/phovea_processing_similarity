@@ -13,15 +13,44 @@ def list_groups():
 
   datasets = list_datasets()
   for dataset in datasets:
+    # check data type, e.g. HDFTable, HDFStratification, HDFMatrix
     if dataset.type == 'stratification':
       for group in dataset.groups():
-        # now we have got two list that should get compared
         groups.append(dict(
           dataset=dataset.id,
           label=group.name,
           ids=dataset.rowids(group.range)
         ))
-
+    elif dataset.type == 'matrix' and dataset.value == 'categorical':  # some matrices has no categories (mRNA, RPPA)
+      mat_data = dataset.asnumpy()
+      # datatset.cols() are the stuff that can be in added to stratomex
+      for col in range(mat_data.shape[1]):  # iterate over columns (numbers)
+        mat_column = mat_data[:, col]  # get column
+        # check in which categories the patients are
+        for cat in dataset.categories:
+          # get indicies as 1-column matrix and convert to 1d array:
+          cat_row_indicies = np.argwhere(mat_column == cat['name'])[:, 0]
+          groups.append(dict(
+            dataset=dataset.id + '-c' + str(col),
+            label=cat if isinstance(cat, str) else cat['label'],
+            ids=dataset.rowids()[cat_row_indicies]
+          ))
+    elif dataset.type == 'table':  # has no 'value'-attribute like matrix
+      for col in dataset.columns:
+        if col.type == 'categorical':
+          col_data = col.asnumpy()  # table doesnt have asnumpy()
+          for cat in col.categories:
+            # TCGA table had just the strings, calumma table has a dict like matrix above
+            cat_name = cat if isinstance(cat, str) else cat['name']
+            cat_row_indicies = np.argwhere(col_data == cat_name)[:, 0]
+            if cat_row_indicies.size > 0:
+              groups.append(dict(
+                # id in stratomex has trailing '-s' which is not needed here
+                # (e.g. tcgaGbmSampledClinical_patient.ethnicity-s)
+                dataset=dataset.id + '_' + col.name,
+                label=cat if isinstance(cat, str) else cat['label'],
+                ids=dataset.rowids()[cat_row_indicies]
+              ))
 
   return groups
 
