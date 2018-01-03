@@ -97,17 +97,28 @@ def group_similarity(method, ids):
             ids_found = 0
             ids_present = np.sum(np.in1d(cmp_patients, dataset.rowids(),assume_unique=True))
             for row in range(data_stack.shape[0]):  # iterate over columns (numbers)
-              data_stack[row][4] = ids_present - ids_found
+              ids_found_reverse = ids_present - ids_found
+              data_stack[row][4] = ids_found_reverse
               #data_stack[row][5] = (ids_present - ids_found) / (row-ids_found+ids_present)  # not (row+1) here
               total_elements_reverse = ((data_stack.shape[0] - row) + ids_found)
-              data_stack[row][5] =  (ids_present - ids_found) / total_elements_reverse
+              data_stack[row][5] =  ids_found_reverse / total_elements_reverse
               if data_stack[row][0] in cmp_patients:
                 ids_found += 1
               data_stack[row][2] = ids_found
-              data_stack[row][3] = row+1  # +1 to reflect number of elements
               total_elements = ((row + 1) - ids_found + ids_present)  # +1 to reflect number of elements
-              data_stack[row][3] = (ids_found) / total_elements
+              data_stack[row][3] = ids_found / total_elements
+
             print col.name
+            # find maximum in frontwards and backwards scorses
+            max_similarity = np.max(data_stack[:, [3, 5]])
+            print "highest similarity: " + str(max_similarity)
+            # row 0, col 0 = index 0, row 0 col 1 = index 1 and so on --> divide by two to get row
+            max_similarity_row = np.argmax(data_stack[:, [3,5]])/float(2)
+            # numerical value at maximum score = value to split
+            #print data_stack[max_similarity_row]
+            num_to_split = data_stack[max_similarity_row, [1]]
+            split_reverse = max_similarity_row%1 != 0 # second column will always have an odd index -> 0.5 division rest
+            print "split at number: " + str(num_to_split) + (" from back" if split_reverse else " from front")
 
 
 
