@@ -67,7 +67,7 @@ def group_similarity(method, ids):
   if similarity_measure is None:
     raise ValueError("No similarity measure for given method: " + method)
 
-  result = {'values': {}, 'groups': {}}
+  result = {'values': {}, 'groups': {}, 'threshold': {}}
 
   try:
     from phovea_server.range import parse
@@ -76,12 +76,13 @@ def group_similarity(method, ids):
     # now compare that group's list of patients to all others
 
     # categorized data:
-    # for group in list_groups():
-    #   sim_score = similarity_measure(cmp_patients, group['ids'])
-    #   if group['dataset'] not in result["values"] or similarity_measure.is_more_similar(sim_score,
-    #                                                                                   result['values'][group['dataset']]):
-    #     result['values'][group['dataset']] = sim_score
-    #     result['groups'][group['dataset']] = group['label']
+    for group in list_groups():
+      sim_score = similarity_measure(cmp_patients, group['ids'])
+      if group['dataset'] not in result["values"] or similarity_measure.is_more_similar(sim_score,
+                                                                                        result['values'][
+                                                                                        group['dataset']]):
+        result['values'][group['dataset']] = sim_score
+        result['groups'][group['dataset']] = group['label']
 
     # numerical data:
     # numerical data is binned to find best match
@@ -89,19 +90,20 @@ def group_similarity(method, ids):
       if dataset.type == 'table':  # maybe also vector?
         print dataset.id
         for col in dataset.columns:
-          if col.type == 'real'or col.type == 'int':
+          if col.type == 'real' or col.type == 'int':
             # real and int is numerical
-            data_stack = np.column_stack((dataset.rowids(),col.asnumpy(), np.zeros((dataset.rowids().shape[0],4))))  # concat ids an data
+            data_stack = np.column_stack(
+              (dataset.rowids(), col.asnumpy(), np.zeros((dataset.rowids().shape[0], 4))))  # concat ids an data
             # matrix is now sorted by id, not by data
-            data_stack = data_stack[data_stack[:,1].argsort()]  # sort by data
+            data_stack = data_stack[data_stack[:, 1].argsort()]  # sort by data
             ids_found = 0
-            ids_present = np.sum(np.in1d(cmp_patients, dataset.rowids(),assume_unique=True))
+            ids_present = np.sum(np.in1d(cmp_patients, dataset.rowids(), assume_unique=True))
             for row in range(data_stack.shape[0]):  # iterate over columns (numbers)
               ids_found_reverse = ids_present - ids_found
               data_stack[row][4] = ids_found_reverse
-              #data_stack[row][5] = (ids_present - ids_found) / (row-ids_found+ids_present)  # not (row+1) here
+              # data_stack[row][5] = (ids_present - ids_found) / (row-ids_found+ids_present)  # not (row+1) here
               total_elements_reverse = ((data_stack.shape[0] - row) + ids_found)
-              data_stack[row][5] =  ids_found_reverse / total_elements_reverse
+              data_stack[row][5] = ids_found_reverse / total_elements_reverse
               if data_stack[row][0] in cmp_patients:
                 ids_found += 1
               data_stack[row][2] = ids_found
@@ -110,18 +112,29 @@ def group_similarity(method, ids):
 
             print col.name
             # find maximum in frontwards and backwards scorses
-            max_similarity = np.max(data_stack[:, [3, 5]])
+            max_similarity = float(np.max(data_stack[:, [3, 5]]))
             print "highest similarity: " + str(max_similarity)
             # row 0, col 0 = index 0, row 0 col 1 = index 1 and so on --> divide by two to get row
-            max_similarity_row = np.argmax(data_stack[:, [3,5]])/float(2)
+            max_similarity_row = np.argmax(data_stack[:, [3, 5]]) / float(2)
+            # print data_stack[max_similarity_row]
+
             # numerical value at maximum score = value to split
-            #print data_stack[max_similarity_row]
-            num_to_split = data_stack[max_similarity_row, [1]]
-            split_reverse = max_similarity_row%1 != 0 # second column will always have an odd index -> 0.5 division rest
-            print "split at number: " + str(num_to_split) + (" from back" if split_reverse else " from front")
+            # ordino will split in values <= threshold and values > thresold
+            # so: if highest similarity is in forward group (no 0.5 remainder) -> use value
+            # but: if highest similarity is in backward group (0.5 remainder) -> use next lower value
 
+            split_reverse = max_similarity_row % 1 != 0  # second column will always have an odd index -> 0.5 remainder
+            print "split at number: " + str(data_stack[max_similarity_row, [1]]) + \
+                  (" from back" if split_reverse else " from front")
 
-
+            num_to_split = data_stack[max_similarity_row - (1 if split_reverse else 0), 1]
+            # casting none to float does not work
+            # if the value is None (no value available) --> make a group with all available values (val <= max)
+            # ordino will make another group with missing values itself
+            num_to_split = float(num_to_split) if num_to_split is not None else np.max(data_stack[:,1])
+            result['values'][dataset.id + '_' + col.name] = max_similarity
+            result['groups'][dataset.id + '_' + col.name] = col.name + (" > " if split_reverse else " <= ") + str(num_to_split)
+            result['threshold'][dataset.id + '_' + col.name] = num_to_split
 
 
   except Exception as e:
