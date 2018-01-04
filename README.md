@@ -5,7 +5,7 @@ phovea_processing_similarity [![Phovea][phovea-image]][phovea-url] [![NPM versio
 
 API will be available at `SERVER:PORT/api/similarity/` e.g.:
 ```
-http://localhost:9000/api/similarity/group/jaccard/?range=11
+http://localhost:9000/api/similarity/group/jaccard/?range=(11,12,13)
 ```
 
 Installation
