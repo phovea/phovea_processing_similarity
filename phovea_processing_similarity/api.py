@@ -6,9 +6,9 @@ from flask import request
 app = Namespace(__name__)
 
 
-@app.route('/column/<method>/', methods=['GET'])
-def calc_similarity(method):
-  res = tasks.column_similarity.delay(method, request.args['range'])
+@app.route('/column/<method>/<column_id>', methods=['GET'])
+def calc_similarity(method, column_id):
+  res = tasks.column_similarity.delay(method, column_id)
   return res.id
 
 
