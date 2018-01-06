@@ -1,7 +1,7 @@
 from __future__ import absolute_import, division
 
 from phovea_processing_queue.task_definition import task, getLogger
-from phovea_server.dataset import list_datasets
+from phovea_server.dataset import list_datasets, get as get_dataset
 from .similarity import similarity_by_name
 import numpy as np
 
@@ -54,6 +54,71 @@ def list_groups():
   return groups
 
 
+def list_columns():
+  columns = []
+
+  # columns {
+  #   id  (full id)
+  #   type (categorical, real, int, string, ...)  (not dataset's type but the column's
+  #   rowids
+
+  #   groups {
+  #     label
+  #     ids --> from rowIds
+  #   }
+  # }
+
+  #for dataset in list_datasets():
+    # check data type, e.g. HDFTable, HDFStratification, HDFMatrix
+   # if dataset.type == 'stratification':
+   # elif dataset.type == 'matrix':
+   # elif dataset.type == 'table':  # has no 'value'-attribute like matrix
+
+
+  return columns
+
+@task
+def column_similarity(method, column_id):
+  _log.debug('Start to calculate %s similarity.', method)
+
+  similarity_measure = similarity_by_name(method)
+  if similarity_measure is None:
+    raise ValueError("No similarity measure for given method: " + method)
+
+
+  # result
+  # -- dataset_id
+  # -- -- similarity score
+  # -- dataset_id
+  # -- -- similarity score
+  # an so on
+  result = {}
+
+  try:
+
+    # get rowids and values of given column
+    given_dataset = get_dataset(column_id)
+
+
+
+    for dataset in list_datasets():
+      if dataset.type == 'table':  # maybe also vector?
+        print dataset.id
+        for col in dataset.columns:
+          if col.type == 'real' or col.type == 'int':
+            # real and int is numerical
+            data_stack = np.column_stack((dataset.rowids(), col.asnumpy()))  # concat ids an data
+            # matrix is sorted by id, not by data --> fine
+
+
+
+  except Exception as e:
+    _log.exception('Can not fulfill task. Error: %s.', e)
+    raise  # rejects promise
+
+  return result  # to JSON automatically
+
+
 @task
 def group_similarity(method, ids):
   _log.debug('Start to calculate %s similarity.', method)
@@ -89,7 +154,7 @@ def group_similarity(method, ids):
             # real and int is numerical
             data_stack = np.column_stack(
               (dataset.rowids(), col.asnumpy(), np.zeros((dataset.rowids().shape[0], 4))))  # concat ids an data
-            # matrix is now sorted by id, not by data
+            # matrix is sorted by id, not by data
             data_stack = data_stack[data_stack[:, 1].argsort()]  # sort by data
             ids_found = 0
             ids_present = np.sum(np.in1d(cmp_patients, dataset.rowids(), assume_unique=True))
