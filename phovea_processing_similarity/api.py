@@ -7,7 +7,7 @@ app = Namespace(__name__)
 
 
 @app.route('/column/<method>/<column_id>', methods=['GET'])
-def calc_similarity(method, column_id):
+def column_similarity(method, column_id):
   res = tasks.column_similarity.delay(method, column_id)
   return res.id
 
