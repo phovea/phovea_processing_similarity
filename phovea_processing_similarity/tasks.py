@@ -134,7 +134,7 @@ def group_similarity(method, ids):
             num_to_split = float(num_to_split) if num_to_split is not None else np.max(data_stack[:,1])
             result['values'][dataset.id + '_' + col.name] = max_similarity
             result['groups'][dataset.id + '_' + col.name] = col.name + (" > " if split_reverse else " <= ") + str(num_to_split)
-            result['threshold'][dataset.id + '_' + col.name] = num_to_split
+            result['threshold'][dataset.id + '_' + col.name] = [num_to_split]
 
 
   except Exception as e:
