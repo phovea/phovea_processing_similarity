@@ -1,6 +1,7 @@
 from __future__ import absolute_import, division
 import abc
 import numpy as np
+from scipy import stats
 
 
 __author__ = 'Klaus Eckelt'
@@ -63,7 +64,16 @@ class PercentBinA(ASimilarityMeasure):
 class Pearson(ASimilarityMeasure):
   def __call__(self, set_a, set_b):
     # Assume set_a and set_b are numerical values
-    return np.intersect1d(set_a, set_b).size / set_a.size  # independent of parameter order
+    if set_a.shape[0] != set_b.shape[0]:
+      return np.nan
+    else:
+      # if all values are 0 -> divide by 0 --> the coefficient gets NaN  --> null in json
+      (pearson_correlation, p_value) = stats.pearsonr(
+        np.nan_to_num(np.array(set_a, dtype=np.float)),
+        np.nan_to_num(np.array(set_b, dtype=np.float))
+      )
+      # p-value is currently unuused
+      return  pearson_correlation
 
   @staticmethod
   def matches(name):
