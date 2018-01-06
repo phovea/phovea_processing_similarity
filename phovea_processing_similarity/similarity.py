@@ -32,6 +32,7 @@ class ASimilarityMeasure(object):
 
 class JaccardSimilarity(ASimilarityMeasure):
   def __call__(self, set_a, set_b):
+    # set_a and set_b are ids of elements
     return np.intersect1d(set_a, set_b).size / np.union1d(set_a, set_b).size  # independent of parameter order
 
   @staticmethod
@@ -41,6 +42,7 @@ class JaccardSimilarity(ASimilarityMeasure):
 
 class PercentAinB(ASimilarityMeasure):
   def __call__(self, set_a, set_b):
+    # set_a and set_b are ids of elements
     return np.intersect1d(set_a, set_b).size / set_a.size  # independent of parameter order
 
   @staticmethod
@@ -50,8 +52,23 @@ class PercentAinB(ASimilarityMeasure):
 
 class PercentBinA(ASimilarityMeasure):
   def __call__(self, set_a, set_b):
+    # set_a and set_b are ids of elements
     return np.intersect1d(set_a, set_b).size / set_b.size  # independent of parameter order
 
   @staticmethod
   def matches(name):
     return "bina" == name
+
+
+class Pearson(ASimilarityMeasure):
+  def __call__(self, set_a, set_b):
+    # Assume set_a and set_b are numerical values
+    return np.intersect1d(set_a, set_b).size / set_a.size  # independent of parameter order
+
+  @staticmethod
+  def matches(name):
+    return "pearson" == name
+
+  @staticmethod
+  def is_more_similar(measure_a, measure_b):
+    return abs(measure_a) > abs(measure_b)  # more correlation (positive or negative) = more similary
