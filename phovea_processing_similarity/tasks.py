@@ -55,11 +55,6 @@ def list_groups():
 
 
 @task
-def add(x, y):
-  return x + y
-
-
-@task
 def group_similarity(method, ids):
   _log.debug('Start to calculate %s similarity.', method)
 
