@@ -7,6 +7,11 @@ API will be available at `SERVER:PORT/api/similarity/` e.g.:
 ```
 http://localhost:9000/api/similarity/group/jaccard/?range=(11,12,13)
 ```
+You receive a UUID which is used to query the results, e.g. with:
+```
+http://localhost:9000/api/processing/res/dff39dde-a787-40fb-a98a-8687f27e80c5
+``` 
+
 
 Installation
 ------------
