@@ -4,6 +4,7 @@ from phovea_processing_queue.task_definition import task, getLogger
 from phovea_server.dataset import list_datasets, get as get_dataset
 from .similarity import similarity_by_name
 import numpy as np
+from scipy import stats
 
 _log = getLogger(__name__)
 
@@ -97,19 +98,28 @@ def column_similarity(method, column_id):
   try:
 
     # get rowids and values of given column
-    given_dataset = get_dataset(column_id)
 
-
+    given_columns_values = np.array([])
 
     for dataset in list_datasets():
       if dataset.type == 'table':  # maybe also vector?
-        print dataset.id
         for col in dataset.columns:
           if col.type == 'real' or col.type == 'int':
             # real and int is numerical
-            data_stack = np.column_stack((dataset.rowids(), col.asnumpy()))  # concat ids an data
-            # matrix is sorted by id, not by data --> fine
+            col_id = dataset.id + '_' + col.name
+            if col_id == column_id:
+              given_columns_values = col.asnumpy()
 
+    if given_columns_values.shape > 0:
+      for dataset in list_datasets():
+        if dataset.type == 'table':  # maybe also vector?
+          for col in dataset.columns:
+            if col.type == 'real' or col.type == 'int':
+              other_values = col.asnumpy();
+              if other_values.shape[0] == given_columns_values.shape[0]:
+                (r, p) = stats.pearsonr(np.array(given_columns_values, dtype=np.float), np.array(other_values, dtype=np.float))
+                _log.info("r value %s and p value s", r, p)
+                pass
 
 
   except Exception as e:
