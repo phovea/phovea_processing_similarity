@@ -104,7 +104,9 @@ def column_similarity(method, column_id):
           if col.type == 'real' or col.type == 'int':
             # real and int is numerical
             col_id = dataset.id + '_' + col.name
-            if col_id == column_id:
+            # col_id will be eg.: calumma_experiment_set_1_Alter bei Diagnose
+            # endswith will match id with dataset id, or just the column label (Alter bei Diagnose)
+            if col_id.endswith(column_id):
               given_columns_values = col.asnumpy()
 
     # compare given column
