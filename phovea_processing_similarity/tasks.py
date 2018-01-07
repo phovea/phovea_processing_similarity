@@ -92,7 +92,7 @@ def column_similarity(method, column_id):
   # -- dataset_id
   # -- -- similarity score
   # an so on
-  result = []
+  result = {}
 
   try:
     given_columns_values = np.array([])
@@ -114,7 +114,7 @@ def column_similarity(method, column_id):
           for col in dataset.columns:
             if col.type == 'real' or col.type == 'int':
               other_values = col.asnumpy()
-              result.append({(dataset.id + '_' + col.name): similarity_measure(given_columns_values, other_values)})
+              result[dataset.id + '_' + col.name] = similarity_measure(given_columns_values, other_values)
 
   except Exception as e:
     _log.exception('Can not fulfill task. Error: %s.', e)
