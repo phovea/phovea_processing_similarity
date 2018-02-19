@@ -7,11 +7,15 @@ API will be available at `SERVER:PORT/api/similarity/` e.g.:
 ```
 http://localhost:9000/api/similarity/group/jaccard/?range=(11,12,13)
 ```
-You receive a UUID which is used to query the results, e.g. with:
+You receive a UUID which is used to query the results (please note the different namespace) , e.g. with:
 ```
 http://localhost:9000/api/processing/res/dff39dde-a787-40fb-a98a-8687f27e80c5
 ``` 
-
+Please note the different namespace for result retrieval as this route is defined in the phovea_processing_queue plugin.
+That also applies for the event stream:
+```
+http://localhost:9000/api/processing/stream
+``` 
 
 Installation
 ------------
