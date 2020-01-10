@@ -1,4 +1,4 @@
-from __future__ import absolute_import
+
 from phovea_server.ns import Namespace
 from . import tasks  # import from current package
 from flask import request

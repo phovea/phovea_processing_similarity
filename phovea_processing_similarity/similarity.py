@@ -1,4 +1,4 @@
-from __future__ import absolute_import, division
+
 import abc
 import numpy as np
 from scipy import stats
@@ -13,9 +13,7 @@ def similarity_by_name(method_name):
       return sim_measure()
 
 
-class ASimilarityMeasure(object):
-  __metaclass__ = abc.ABCMeta
-
+class ASimilarityMeasure(object, metaclass=abc.ABCMeta):
   @abc.abstractmethod
   def __call__(self, set_a, set_b):
     pass
