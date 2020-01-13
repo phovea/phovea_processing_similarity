@@ -1,11 +1,9 @@
-
-
-from phovea_processing_queue.task_definition import task, getLogger
-from phovea_server.dataset import list_datasets, get as get_dataset
+from phovea_processing_queue.task_definition import task, get_logger
+from phovea_server.dataset import list_datasets
 from .similarity import similarity_by_name
 import numpy as np
 
-_log = getLogger(__name__)
+_log = get_logger(__name__)
 
 
 def list_groups():
@@ -68,14 +66,14 @@ def list_columns():
   #   }
   # }
 
-  #for dataset in list_datasets():
+  # for dataset in list_datasets():
     # check data type, e.g. HDFTable, HDFStratification, HDFMatrix
-   # if dataset.type == 'stratification':
-   # elif dataset.type == 'matrix':
-   # elif dataset.type == 'table':  # has no 'value'-attribute like matrix
-
+    # if dataset.type == 'stratification':
+    # elif dataset.type == 'matrix':
+    # elif dataset.type == 'table':  # has no 'value'-attribute like matrix
 
   return columns
+
 
 @task
 def column_similarity(method, column_id):
@@ -84,7 +82,6 @@ def column_similarity(method, column_id):
   similarity_measure = similarity_by_name(method)
   if similarity_measure is None:
     raise ValueError("No similarity measure for given method: " + method)
-
 
   # result
   # -- dataset_id =
@@ -144,9 +141,7 @@ def group_similarity(method, ids):
     # categorized data:
     for group in list_groups():
       sim_score = similarity_measure(cmp_patients, group['ids'])
-      if group['dataset'] not in result["values"] or similarity_measure.is_more_similar(sim_score,
-                                                                                        result['values'][
-                                                                                        group['dataset']]):
+      if group['dataset'] not in result["values"] or similarity_measure.is_more_similar(sim_score, result['values'][group['dataset']]):
         result['values'][group['dataset']] = sim_score
         result['groups'][group['dataset']] = group['label']
 
@@ -190,18 +185,16 @@ def group_similarity(method, ids):
             # but: if highest similarity is in backward group (0.5 remainder) -> use next lower value
 
             split_reverse = max_similarity_row % 1 != 0  # second column will always have an odd index -> 0.5 remainder
-            print("split at number: " + str(data_stack[max_similarity_row, [1]]) + \
-                  (" from back" if split_reverse else " from front"))
+            print("split at number: " + str(data_stack[max_similarity_row, [1]]) + (" from back" if split_reverse else " from front"))
 
             num_to_split = data_stack[max_similarity_row - (1 if split_reverse else 0), 1]
             # casting none to float does not work
             # if the value is None (no value available) --> make a group with all available values (val <= max)
             # ordino will make another group with missing values itself
-            num_to_split = float(num_to_split) if num_to_split is not None else np.max(data_stack[:,1])
+            num_to_split = float(num_to_split) if num_to_split is not None else np.max(data_stack[:, 1])
             result['values'][dataset.id + '_' + col.name] = max_similarity
             result['groups'][dataset.id + '_' + col.name] = col.name + (" > " if split_reverse else " <= ") + str(num_to_split)
             result['threshold'][dataset.id + '_' + col.name] = [num_to_split]
-
 
   except Exception as e:
     _log.exception('Can not fulfill task. Error: %s.', e)
