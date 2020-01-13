@@ -1,4 +1,3 @@
-
 import abc
 import numpy as np
 from scipy import stats
@@ -71,7 +70,7 @@ class Pearson(ASimilarityMeasure):
         np.nan_to_num(np.array(set_b, dtype=np.float))
       )
       # p-value is currently unuused
-      return  pearson_correlation
+      return pearson_correlation
 
   @staticmethod
   def matches(name):
