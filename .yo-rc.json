@@ -23,6 +23,12 @@
     "name": "phovea_processing_similarity",
     "author": "Klaus Eckelt",
     "today": "Thu, 12 Oct 2017 14:12:17 GMT",
-    "githubAccount": "phovea"
+    "githubAccount": "phovea",
+    "promptValues": {
+      "authorName": "Klaus Eckelt",
+      "authorEmail": "Klaus.Eckelt@gmail.com",
+      "authorUrl": "",
+      "githubAccount": "phovea"
+    }
   }
 }

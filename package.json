@@ -31,8 +31,8 @@
     "test": "test ! -d tests || python setup.py test",
     "docs": "sphinx-apidoc -o docs -f ./phovea_processing_similarity && sphinx-build ./docs build/docs",
     "prebuild": "node -e \"process.exit(process.env.PHOVEA_SKIP_TESTS === undefined?1:0)\" || npm run test",
-    "build": "python build.py",
+    "build": "rm -rf build/source && find . -name '*.pyc' -delete && node buildPython.js && cp -r ./phovea_processing_similarity build/source/",
     "predist": "npm run build && npm run docs",
-    "dist": "python setup.py sdist bdist_wheel && cd build && tar cvzf ../dist/phovea_processing_similarity.tar.gz *"
+    "dist": "python setup.py sdist bdist_wheel"
   }
 }
