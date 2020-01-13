@@ -1,4 +1,4 @@
-from __future__ import absolute_import, division
+
 
 from phovea_processing_queue.task_definition import task, getLogger
 from phovea_server.dataset import list_datasets, get as get_dataset
@@ -154,7 +154,7 @@ def group_similarity(method, ids):
     # numerical data is binned to find best match
     for dataset in list_datasets():
       if dataset.type == 'table':  # maybe also vector?
-        print dataset.id
+        print(dataset.id)
         for col in dataset.columns:
           if col.type == 'real' or col.type == 'int':
             # real and int is numerical
@@ -176,10 +176,10 @@ def group_similarity(method, ids):
               total_elements = ((row + 1) - ids_found + ids_present)  # +1 to reflect number of elements
               data_stack[row][3] = ids_found / total_elements
 
-            print col.name
+            print(col.name)
             # find maximum in frontwards and backwards scorses
             max_similarity = float(np.max(data_stack[:, [3, 5]]))
-            print "highest similarity: " + str(max_similarity)
+            print("highest similarity: " + str(max_similarity))
             # row 0, col 0 = index 0, row 0 col 1 = index 1 and so on --> divide by two to get row
             max_similarity_row = np.argmax(data_stack[:, [3, 5]]) / float(2)
             # print data_stack[max_similarity_row]
@@ -190,8 +190,8 @@ def group_similarity(method, ids):
             # but: if highest similarity is in backward group (0.5 remainder) -> use next lower value
 
             split_reverse = max_similarity_row % 1 != 0  # second column will always have an odd index -> 0.5 remainder
-            print "split at number: " + str(data_stack[max_similarity_row, [1]]) + \
-                  (" from back" if split_reverse else " from front")
+            print("split at number: " + str(data_stack[max_similarity_row, [1]]) + \
+                  (" from back" if split_reverse else " from front"))
 
             num_to_split = data_stack[max_similarity_row - (1 if split_reverse else 0), 1]
             # casting none to float does not work
