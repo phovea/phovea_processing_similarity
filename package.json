@@ -21,7 +21,7 @@
   "name": "phovea_processing_similarity",
   "description": "Processing queue plugin to compute similarities for categorical data of matrices, tables, and stratifications",
   "homepage": "https://phovea.caleydo.org",
-  "version": "1.0.0-SNAPSHOT",
+  "version": "1.0.0",
   "author": {
     "name": "Klaus Eckelt",
     "email": "Klaus.Eckelt@gmail.com",
