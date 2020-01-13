@@ -67,10 +67,10 @@ def list_columns():
   # }
 
   # for dataset in list_datasets():
-    # check data type, e.g. HDFTable, HDFStratification, HDFMatrix
-    # if dataset.type == 'stratification':
-    # elif dataset.type == 'matrix':
-    # elif dataset.type == 'table':  # has no 'value'-attribute like matrix
+  # check data type, e.g. HDFTable, HDFStratification, HDFMatrix
+  # if dataset.type == 'stratification':
+  # elif dataset.type == 'matrix':
+  # elif dataset.type == 'table':  # has no 'value'-attribute like matrix
 
   return columns
 
