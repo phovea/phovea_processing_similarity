@@ -1,2 +1,2 @@
--e git+https://github.com/phovea/phovea_server.git@update_dependencies#egg=phovea_server
--e git+https://github.com/phovea/phovea_processing_queue.git@update_dependencies#egg=phovea_processing_queue
+-e git+https://github.com/phovea/phovea_server.git@update_requirements#egg=phovea_server
+-e git+https://github.com/phovea/phovea_processing_queue.git@update_requirements#egg=phovea_processing_queue
