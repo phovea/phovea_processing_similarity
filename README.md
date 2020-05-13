@@ -1,5 +1,8 @@
-phovea_processing_similarity [![Phovea][phovea-image]][phovea-url] [![NPM version][npm-image]][npm-url] [![Build Status][travis-image]][travis-url] [![Dependency Status][daviddm-image]][daviddm-url]
+phovea_processing_similarity
 =====================
+ [![Phovea][phovea-image]][phovea-url]  [![Build Status][circleci-image]][circleci-url] 
+ 
+ 
 
 [Processing queue](https://github.com/phovea/phovea_processing_queue) plugin to compute similarities for categorical data of matrices, tables, and stratifications.
 
@@ -50,9 +53,5 @@ This repository is part of **[Phovea](http://phovea.caleydo.org/)**, a platform 
 
 [phovea-image]: https://img.shields.io/badge/Phovea-Server%20Plugin-10ACDF.svg
 [phovea-url]: https://phovea.caleydo.org
-[npm-image]: https://badge.fury.io/js/phovea_processing_similarity.svg
-[npm-url]: https://npmjs.org/package/phovea_processing_similarity
 [circleci-image]: https://circleci.com/gh/phovea/phovea_processing_similarity.svg?style=shield
 [circleci-url]: https://circleci.com/gh/phovea/phovea_processing_similarity
-[daviddm-image]: https://david-dm.org/phovea/phovea_processing_similarity/status.svg
-[daviddm-url]: https://david-dm.org/phovea/phovea_processing_similarity
