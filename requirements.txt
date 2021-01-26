@@ -1,2 +1,2 @@
-phovea_server>=release-7.0.0,<NaN.0.0
-phovea_processing_queue>=release-6.0.0,<NaN.0.0
+-e git+https://github.com/phovea/phovea_processing_queue.git@release-6.0.0#egg=phovea_processing_queue
+-e git+https://github.com/phovea/phovea_server.git@release-7.0.0#egg=phovea_server
